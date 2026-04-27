@@ -16,13 +16,13 @@ def gt():
     return time.time() - t
 
 def move(x, y):
-    e.append(('mouse move', gt(), (x, y)))
+    e.append(('mouse_move', gt(), (x, y)))
 
 def click(x, y, button, pressed):
-    e.append(('mouse click', gt(), (x, y, button, pressed)))
+    e.append(('mouse_click', gt(), (x, y, button, pressed)))
 
 def scro(x, y, dx, dy):
-    e.append(('mouse scroll', gt(), (x, y, dx, dy)))
+    e.append(('mouse_scroll', gt(), (x, y, dx, dy)))
 
 def press(key):
     if key == keyboard.Key.esc:
@@ -50,16 +50,16 @@ def play_macro():
         if target_time > current_elapsed:
             time.sleep(target_time - current_elapsed)
             
-        if event_type == 'mouse move':
+        if event_type == 'mouse_move':
             m.position = data
-        elif event_type == 'mouse click':
+        elif event_type == 'mouse_click':
             x, y, button, pressed = data
             m.position = (x, y)
             if pressed:
                 m.press(button)
             else:
                 m.release(button)
-        elif event_type == 'mouse scroll':
+        elif event_type == 'mouse_scroll':
             x, y, dx, dy = data
             m.position = (x, y)
             m.scroll(dx, dy)
@@ -88,6 +88,9 @@ def record_macro():
             ml.stop()
             
     print(f"Recorded {len(e)} events.")
+    print("\nRecorded Array:")
+    print(e)
+    print("\n")
     with open('macro.pkl', 'wb') as f:
         pickle.dump(e, f)
     print("Saved to macro.pkl!")

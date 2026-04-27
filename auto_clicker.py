@@ -1,4 +1,6 @@
 import time
+import sys
+import pickle
 from pynput import mouse, keyboard
 
 e = []
@@ -74,22 +76,46 @@ def play_macro():
                 
     print("[Playback finished!]")
 
-if __name__ == "__main__":
+def record_macro():
     print("=======================================")
-    print("  Simple Macro Recorder & Player")
+    print("  Recording Macro...")
     print("=======================================")
-    print("Starting to record immediately...")
     print("Move your mouse and type. Press [ESC] to stop recording.\n")
     
-    # Start listening to mouse and keyboard
     with mouse.Listener(on_move=move, on_click=click, on_scroll=scro) as ml:
         with keyboard.Listener(on_press=press, on_release=on_release) as kl:
-            kl.join() # Wait until ESC is pressed
-            ml.stop() # Stop mouse listener as well
+            kl.join()
+            ml.stop()
             
     print(f"Recorded {len(e)} events.")
-    
-    # Play it back
+    with open('macro.pkl', 'wb') as f:
+        pickle.dump(e, f)
+    print("Saved to macro.pkl!")
+
+def load_and_play():
+    global e
+    try:
+        with open('macro.pkl', 'rb') as f:
+            e = pickle.load(f)
+    except FileNotFoundError:
+        print("No macro found! Run 'python3 auto_clicker.py record' first.")
+        return
+        
     print("\nStarting playback in 3 seconds...")
     time.sleep(3)
     play_macro()
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python3 auto_clicker.py [record|play]")
+        sys.exit(1)
+        
+    command = sys.argv[1].lower()
+    
+    if command == "record":
+        record_macro()
+    elif command == "play":
+        load_and_play()
+    else:
+        print(f"Unknown command: {command}")
+        print("Available commands: record, play")
